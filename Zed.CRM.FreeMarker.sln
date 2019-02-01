@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zed.CRM.FreeMarker", "Zed.CRM.FreeMarker\Zed.CRM.FreeMarker.csproj", "{322C25ED-8FDC-4FBB-975E-A82BC651784C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zed.CRM.FreeMarker.Tests", "Zed.CRM.FreeMarker.Tests\Zed.CRM.FreeMarker.Tests.csproj", "{CF648BB5-2A7C-48DC-9DDA-A0F09F30A4D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zed.CRM.FreeMarker.Sample.Plugins", "Zed.CRM.FreeMarker.Sample.Plugins\Zed.CRM.FreeMarker.Sample.Plugins.csproj", "{51E10D18-BCE5-46BD-B3A3-049691F4E84E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{322C25ED-8FDC-4FBB-975E-A82BC651784C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{322C25ED-8FDC-4FBB-975E-A82BC651784C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{322C25ED-8FDC-4FBB-975E-A82BC651784C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{322C25ED-8FDC-4FBB-975E-A82BC651784C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF648BB5-2A7C-48DC-9DDA-A0F09F30A4D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF648BB5-2A7C-48DC-9DDA-A0F09F30A4D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF648BB5-2A7C-48DC-9DDA-A0F09F30A4D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF648BB5-2A7C-48DC-9DDA-A0F09F30A4D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51E10D18-BCE5-46BD-B3A3-049691F4E84E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E10D18-BCE5-46BD-B3A3-049691F4E84E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E10D18-BCE5-46BD-B3A3-049691F4E84E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E10D18-BCE5-46BD-B3A3-049691F4E84E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {99AE07DF-ACB5-4922-82F2-E524009E7E5F}
+	EndGlobalSection
+EndGlobal
