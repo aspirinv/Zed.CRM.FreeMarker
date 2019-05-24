@@ -28,12 +28,13 @@ namespace Zed.CRM.FreeMarker
             throw new Exception($"Directive {directive} is not supported.");
         }
 
-        public FreeMarkerParser(IOrganizationService orgService, string template, bool validataVariables = true)
+        public FreeMarkerParser(IOrganizationService orgService, string template, Configurations configurations = null)
         {
-            ValidateVariables = validataVariables;
+            configurations = configurations ?? Configurations.Default(orgService);
+            ValidateVariables = configurations.ValidataVariables;
             _service = orgService;
             _queries = new Dictionary<string, List<QueryExpression>>();
-            _metadataContainer = new MetadataManager(orgService, _queries);
+            _metadataContainer = new MetadataManager(orgService, _queries, configurations);
             SetTemplate(template);
         }
 

@@ -29,7 +29,12 @@ namespace Zed.CRM.FreeMarker.Tests
                 new OptionMetadata("Div".AsLabel(), 2)
             }));
 
-            _contactMetadata = new[] { fullNameField, genderField }.Compile("contact");
+            var startField = new DateTimeAttributeMetadata(DateTimeFormat.DateAndTime);
+            startField.SetName("startdate");
+            var endField = new DateTimeAttributeMetadata(DateTimeFormat.DateAndTime);
+            endField.SetName("enddate");
+
+            _contactMetadata = new[] { fullNameField, genderField, startField, endField }.Compile("contact");
         }
 
         [TestMethod]
@@ -93,6 +98,38 @@ namespace Zed.CRM.FreeMarker.Tests
             });
 
             Assert.AreEqual("Hi, Noname", result);
+        }
+        
+        [TestMethod]
+        public void FormatValueTemplateParseTest()
+        {
+            var customerId = Guid.NewGuid();
+
+            var service = new Mock<IOrganizationService>();
+            service.Setup(s => s.Execute(It.IsAny<RetrieveAllEntitiesRequest>()))
+                .Returns(new [] { _contactMetadata }.AsResponse());
+            service.Setup(s => s.Execute(It.IsAny<RetrieveEntityRequest>()))
+                .Returns(_contactMetadata.AsResponse());
+
+            var startDate = new DateTime(2019, 05, 20, 20, 30, 00, DateTimeKind.Utc);
+            service.Setup(s => s.RetrieveMultiple(It.Is<QueryExpression>(e
+                 => e.Criteria.Conditions.Any(c => c.AttributeName == "contactid" && c.Values.Contains(customerId)))))
+                .Returns(new EntityCollection(new List<Entity>
+                {
+                    new Entity("contact", customerId)
+                    {
+                        ["startdate"] = startDate
+                    }
+                }));
+
+            var template = "Recieve it at ${Customer.contact.startdate?t} Return at ${Customer.contact.enddate?t!Whenever}";
+            var parser = new FreeMarkerParser(service.Object, template);
+            var result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual($"Recieve it at {startDate.ToLocalTime().ToString("t")} Return at Whenever", result);
         }
 
         [TestMethod]

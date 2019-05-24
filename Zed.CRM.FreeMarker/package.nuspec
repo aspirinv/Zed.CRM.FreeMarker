@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Zed.CRM.FreeMarker</id>
+    <version>1.0.0.3</version>
+    <authors>Spirin Alexander</authors>
+    <owners>Spirin Alexander</owners>
+    <licenseUrl>https://github.com/aspirinv/Zed.CRM.FreeMarker/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/aspirinv/Zed.CRM.FreeMarker</projectUrl>
+    <!--<iconUrl></iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CRM FreeMarker template engine</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>FreeMarker CRM Textprocessing</tags>
+    <dependencies>
+      <dependency id="Microsoft.CrmSdk.CoreAssemblies" version="9.0.2.12" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="Zed.CRM.FreeMarker\bin\Debug\Zed.CRM.FreeMarker.dll" target="lib\Zed.CRM.FreeMarker.dll"></file>
+  </files>
+</package>

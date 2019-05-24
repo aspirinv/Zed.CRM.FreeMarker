@@ -13,6 +13,7 @@ namespace Zed.CRM.FreeMarker
         public string EntityPath { get; set; }
         public string Variable { get; set; }
         public string EntityName { get; set; }
+        public string Format { get; set; }
         public int Position { get; set; }
         public bool InUrl { get; set; }
 
@@ -29,13 +30,19 @@ namespace Zed.CRM.FreeMarker
                 mask = (int)ZedActivityPartyParticipationTypeMask.Sender;
             }
 
-            var majorParts = value.Split(new[] { '!' }, StringSplitOptions.RemoveEmptyEntries);
-            var parts = majorParts[0].Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            var majorParts = value.Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var defParts = (majorParts.Length > 1 ? majorParts[1] : majorParts[0])
+                .Split(new[] { '!' }, StringSplitOptions.RemoveEmptyEntries);
+            var major = majorParts.Length > 1 ? majorParts[0] : defParts[0];
+            Format = majorParts.Length > 1 ? defParts[0] : string.Empty;
+            
+            var parts = major.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length < 3)
             {
                 throw new Exception($"Invalid template parameter {value}");
             }
-            Default = majorParts.Length > 1 ? majorParts.Last().Trim('\"') : "";
+            Default = defParts.Length > 1 ? defParts.Last().Trim('\"') : "";
             Position = position;
             Variable = parts[0];
             EntityName = metadataContainer.DefineEntityName(parts[1]);
@@ -105,11 +112,12 @@ namespace Zed.CRM.FreeMarker
             }
             if (entityValue is Money)
             {
-                return (entityValue as Money).Value.ToString("n");
+                return (entityValue as Money).Value.ToString(Format == string.Empty? "n": Format);
             }
             if (entityValue is DateTime)
             {
-                return ((DateTime)entityValue).ToString("d");
+                return _metadataContainer.Configurations.ToLocalDateTime((DateTime)entityValue)
+                    .ToString(_metadataContainer.Configurations.DefineDateTimeFormat(Format == string.Empty ? "g" : Format));
             }
             if (entityValue is OptionSetValue)
             {

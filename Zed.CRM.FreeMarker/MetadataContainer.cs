@@ -14,11 +14,14 @@ namespace Zed.CRM.FreeMarker
         private IOrganizationService _organizationService;
         private Dictionary<string, List<QueryExpression>> _queries;
 
+        public Configurations Configurations { get; }
+
         public MetadataManager(IOrganizationService organizationService,
-            Dictionary<string, List<QueryExpression>> queries)
+            Dictionary<string, List<QueryExpression>> queries, Configurations configurations)
         {
             _organizationService = organizationService;
             _queries = queries;
+            Configurations = configurations;
             _entities = GetAllEntities();
         }
 
