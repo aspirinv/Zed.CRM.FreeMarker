@@ -7,7 +7,7 @@ namespace Zed.CRM.FreeMarker
 {
     public class Configurations
     {
-        public static Configurations Default(IOrganizationService service)
+        public static Configurations Current(IOrganizationService service)
         {
             var result = new Configurations();
 
@@ -30,6 +30,15 @@ namespace Zed.CRM.FreeMarker
 
             return result;
         }
+
+        public static Configurations Default = new Configurations
+        {
+            DateFormat = "d",
+            DateTimeFormat = "g",
+            TimeFormat = "t",
+            UserZoneInfo = TimeZoneInfo.Local
+        };
+
 
         public TimeZoneInfo UserZoneInfo { get; set; }
         public bool ValidataVariables { get; set; } = false;

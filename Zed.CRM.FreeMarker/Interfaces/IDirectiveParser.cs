@@ -6,7 +6,7 @@ namespace Zed.CRM.FreeMarker.Interfaces
     public interface IDirectiveParser
     {
         void SetValue(string value);
-        string Render(Dictionary<string, Entity> source, IList<IPlaceholder> contentItems);
+        string Render(Dictionary<string, Entity> source, Dictionary<string, IList<IPlaceholder>> contentItems);
         MetadataManager Metadata { get; }
     }
 }

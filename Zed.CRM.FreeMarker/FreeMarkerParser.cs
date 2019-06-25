@@ -16,12 +16,14 @@ namespace Zed.CRM.FreeMarker
         private IList<IPlaceholder> _placeholders;
 
         public bool ValidateVariables { get; set; }
-        protected virtual IDirectiveParser CreateParser(string directive)
+        private IDirectiveParser CreateParser(string directive, DirectiveHolder current)
         {
             switch (directive.ToLower())
             {
-                case "if":
+                case "if": return new IfParser(_metadataContainer);
+                case "elseif":
                     {
+                        current.ApplyInDirective("else");
                         return new IfParser(_metadataContainer);
                     }
             }
@@ -30,7 +32,7 @@ namespace Zed.CRM.FreeMarker
 
         public FreeMarkerParser(IOrganizationService orgService, string template, Configurations configurations = null)
         {
-            configurations = configurations ?? Configurations.Default(orgService);
+            configurations = configurations ?? Configurations.Current(orgService);
             ValidateVariables = configurations.ValidataVariables;
             _service = orgService;
             _queries = new Dictionary<string, List<QueryExpression>>();
@@ -58,6 +60,10 @@ namespace Zed.CRM.FreeMarker
                         Regex.Matches(template, @"<#([[a-zA-Z]*) ([^>]*)>")
                             .OfType<Match>()
                             .Select(item => new { match = item, type = PlaceholderType.Directive }))
+                    .Union(
+                        Regex.Matches(template, @"<#([[a-zA-Z]*)>")
+                            .OfType<Match>()
+                            .Select(item => new { match = item, type = PlaceholderType.InDirective }))
                     .Union(
                         Regex.Matches(template, @"<\/#([[a-zA-Z]*)>")
                             .OfType<Match>()
@@ -91,27 +97,42 @@ namespace Zed.CRM.FreeMarker
                         }
                     case PlaceholderType.Directive:
                         {
+                            var directive = match.match.Groups[1].Value;
+                            var parser = CreateParser(directive, currentDirective);
                             if (currentDirective != null)
                             {
                                 directives.Push(currentDirective);
+                                holders = currentDirective.CurrentItems;
                             }
-                            var directive = match.match.Groups[1].Value;
-                            currentDirective = new DirectiveHolder(directive, match.match.Groups[2].Value, CreateParser(directive), position++);
+                            currentDirective = new DirectiveHolder(directive, match.match.Groups[2].Value, parser, position++);
                             holders.Add(currentDirective);
-                            holders = currentDirective.ContentItems;
+                            holders = currentDirective.CurrentItems;
+                            break;
+                        }
+                    case PlaceholderType.InDirective:
+                        {
+                            var indirective = match.match.Groups[1].Value;
+                            if (currentDirective == null)
+                                throw new Exception($"Incorrect In directive {indirective} outside of any other directives");
+                            holders = currentDirective.ApplyInDirective(indirective);
                             break;
                         }
                     case PlaceholderType.DirectiveEnd:
                         {
-                            if (currentDirective == null ||
-                                    !currentDirective.Directive.Equals(match.match.Groups[1].Value, StringComparison.InvariantCultureIgnoreCase))
-                            {
+                            if (currentDirective == null )
                                 throw new Exception($"End of the directive {match.match.Value} don't fit any directive beginning");
+
+                            while (currentDirective.Directive == "elseif")
+                            {
+                                currentDirective = directives.Pop();
                             }
+                            if(!currentDirective.Directive.Equals(match.match.Groups[1].Value, StringComparison.InvariantCultureIgnoreCase))
+                                throw new Exception($"End of the directive {match.match.Value} don't fit any directive beginning");
+
                             if (directives.Count > 0)
                             {
                                 currentDirective = directives.Pop();
-                                holders = currentDirective.ContentItems;
+                                holders = currentDirective.CurrentItems;
                             }
                             else
                             {

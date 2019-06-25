@@ -18,6 +18,12 @@
         /// end of previously used directive
         /// <example><![CDATA[ </#if> ]]></example>
         /// </summary>
-        DirectiveEnd
+        DirectiveEnd,
+
+        /// <summary>
+        /// Injected into directive elements
+        /// <example><![CDATA[ <#else> ]]></example>
+        /// </summary>
+        InDirective
     }
 }

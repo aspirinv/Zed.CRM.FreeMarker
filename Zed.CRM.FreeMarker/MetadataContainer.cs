@@ -43,6 +43,8 @@ namespace Zed.CRM.FreeMarker
 
         public string DefineField(string fieldName, string entityName)
         {
+            fieldName = fieldName.Trim();
+            entityName = entityName.Trim();
             var property = GetAttributesMetadata(entityName).Attributes.FirstOrDefault(item =>
                 item.LogicalName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase) ||
                 item.DisplayName.LocalizedLabels.Any(label => label.Label.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase)));
@@ -55,6 +57,7 @@ namespace Zed.CRM.FreeMarker
 
         public string DefineEntityName(string entityName)
         {
+            entityName = entityName.Trim();
             var entity = _entities.FirstOrDefault(item =>
                 item.LogicalName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase) ||
                 item.DisplayName.LocalizedLabels.Any(label => label.Label.Equals(entityName, StringComparison.InvariantCultureIgnoreCase)));
@@ -68,13 +71,13 @@ namespace Zed.CRM.FreeMarker
         public string GetOptionsetText(OptionSetValue entityValue, string entityName, string field)
         {
             return (GetAttributesMetadata(entityName).Attributes
-                .FirstOrDefault(attribute => attribute.LogicalName == field) as PicklistAttributeMetadata)?.OptionSet.Options
+                .FirstOrDefault(attribute => attribute.LogicalName == field.Trim()) as PicklistAttributeMetadata)?.OptionSet.Options
                 .FirstOrDefault(item => item.Value == entityValue.Value)?.Label.UserLocalizedLabel.Label;
         }
 
         public string GetEntityId(string entityName)
         {
-            return _entities.First(item => item.LogicalName == entityName).PrimaryIdAttribute;
+            return _entities.First(item => item.LogicalName == entityName.Trim()).PrimaryIdAttribute;
         }
 
         private EntityMetadata[] GetAllEntities()
@@ -90,7 +93,7 @@ namespace Zed.CRM.FreeMarker
         {
             return ((RetrieveEntityResponse)_organizationService.Execute(new RetrieveEntityRequest
             {
-                LogicalName = entityName,
+                LogicalName = entityName.Trim(),
                 RetrieveAsIfPublished = false,
                 EntityFilters = EntityFilters.Attributes
             })).EntityMetadata;
