@@ -9,13 +9,23 @@ namespace Zed.CRM.FreeMarker
     {
         public static Configurations Current(IOrganizationService service)
         {
+            return Get(service);
+        }
+
+        public static Configurations Get(IOrganizationService service, Guid? userId = null)
+        {
             var result = new Configurations();
 
             var query = new QueryExpression("usersettings")
             {
                 ColumnSet = new ColumnSet("dateformatstring", "timeformatstring", "dateseparator", "timeseparator")
             };
-            query.Criteria.AddCondition("systemuserid", ConditionOperator.EqualUserId);
+
+            var condition = userId == null
+                ? new ConditionExpression("systemuserid", ConditionOperator.EqualUserId)
+                : new ConditionExpression("systemuserid", ConditionOperator.Equal, userId);
+            query.Criteria.AddCondition(condition);
+
             var link = query.AddLink("timezonedefinition", "timezonecode", "timezonecode");
             link.Columns = new ColumnSet("standardname");
             link.EntityAlias = "tz";

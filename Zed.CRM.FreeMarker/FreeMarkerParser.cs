@@ -16,6 +16,7 @@ namespace Zed.CRM.FreeMarker
         private IList<IPlaceholder> _placeholders;
 
         public bool ValidateVariables { get; set; }
+        public event EventHandler<EntityRetrievedEventArgs> OnEntityRetrieved;
         private IDirectiveParser CreateParser(string directive, DirectiveHolder current)
         {
             switch (directive.ToLower())
@@ -32,7 +33,7 @@ namespace Zed.CRM.FreeMarker
 
         public FreeMarkerParser(IOrganizationService orgService, string template, Configurations configurations = null)
         {
-            configurations = configurations ?? Configurations.Current(orgService);
+            configurations = configurations ?? Configurations.Default;
             ValidateVariables = configurations.ValidataVariables;
             _service = orgService;
             _queries = new Dictionary<string, List<QueryExpression>>();
@@ -167,6 +168,12 @@ namespace Zed.CRM.FreeMarker
             query.Criteria.Conditions.Add(condition);
             var result = _service.RetrieveMultiple(query).Entities.FirstOrDefault() ?? new Entity(reference.LogicalName);
             query.Criteria.Conditions.Remove(condition);
+            OnEntityRetrieved?.Invoke(this, new EntityRetrievedEventArgs
+            {
+                Entity = result,
+                Key = type,
+                LogicalName = reference.LogicalName
+            });
             return result;
         }
     }

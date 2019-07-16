@@ -62,6 +62,7 @@
     <Compile Include="ActivityPartyParticipationTypeMask.cs" />
     <Compile Include="Configurations.cs" />
     <Compile Include="DirectiveHolder.cs" />
+    <Compile Include="EntityRetrievedEventArgs.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FreeMarkerParser.cs" />
     <Compile Include="IfParser.cs" />

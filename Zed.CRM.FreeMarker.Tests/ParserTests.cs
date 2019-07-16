@@ -185,5 +185,33 @@ namespace Zed.CRM.FreeMarker.Tests
             Assert.AreEqual("Dear, Brunhilde Semel", result);
         }
 
+        [TestMethod]
+        public void ReplaceValueTest()
+        {
+            var customerId = Guid.NewGuid();
+
+            var service = new Mock<IOrganizationService>();
+            service.Setup(s => s.Execute(It.IsAny<RetrieveAllEntitiesRequest>()))
+                .Returns(new[] { _contactMetadata }.AsResponse());
+            service.Setup(s => s.Execute(It.IsAny<RetrieveEntityRequest>()))
+                .Returns(_contactMetadata.AsResponse());
+
+            service.Setup(s => s.RetrieveMultiple(It.Is<QueryExpression>(e
+                 => e.Criteria.Conditions.Any(c => c.AttributeName == "contactid" && c.Values.Contains(customerId)))))
+                .Returns(new EntityCollection(new List<Entity>
+                {
+                    new Entity("contact", customerId) { ["fullname"] = "Alexander Spirin" }
+                }));
+
+            var template = "Hi, ${Customer.contact.fullname}";
+            var parser = new FreeMarkerParser(service.Object, template);
+            parser.OnEntityRetrieved += (s, e) => { e.Entity["fullname"] = "Stranger"; };
+            var result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Hi, Stranger", result);
+        }
     }
 }
