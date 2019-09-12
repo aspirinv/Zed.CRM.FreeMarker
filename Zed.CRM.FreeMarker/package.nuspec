@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0"?>
+<!--D:\Projects\Zed.CRM.FreeMarker>"C:\Program Files (x86)\NuGet\nuget.exe" pack package.nuspec-->
 <package >
   <metadata>
     <id>Zed.CRM.FreeMarker</id>

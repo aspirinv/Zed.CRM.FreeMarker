@@ -15,13 +15,11 @@ namespace Zed.CRM.FreeMarker
         public string EntityName { get; set; }
         public string Format { get; set; }
         public int Position { get; set; }
-        public bool InUrl { get; set; }
 
         private readonly MetadataManager _metadataContainer;
 
-        public Placeholder(MetadataManager metadataContainer, string value, int position, bool inUrl = false)
+        public Placeholder(MetadataManager metadataContainer, string value, int position)
         {
-            InUrl = inUrl;
             _metadataContainer = metadataContainer;
             var mask = (int)ZedActivityPartyParticipationTypeMask.Owner;
             if (value.Contains(".from."))
@@ -94,8 +92,7 @@ namespace Zed.CRM.FreeMarker
             {
                 return string.Empty;
             }
-            var result = entity.Contains(EntityPath) ? GetRawValue(entity) : Default;
-            return InUrl ? Uri.EscapeUriString(result) : result;
+            return entity.Contains(EntityPath) ? GetRawValue(entity) : Default;
         }
 
         private string GetRawValue(Entity entity)
@@ -123,7 +120,8 @@ namespace Zed.CRM.FreeMarker
             {
                 return _metadataContainer.GetOptionsetText(entityValue as OptionSetValue, entityName, field);
             }
-            return Convert.ToString(entityValue);
+            var result = Convert.ToString(entityValue);
+            return Format == "href" ? Uri.EscapeUriString(result) : result;
         }
     }
 }

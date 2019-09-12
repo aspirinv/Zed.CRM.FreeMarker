@@ -77,14 +77,10 @@ namespace Zed.CRM.FreeMarker
             var directives = new Stack<DirectiveHolder>();
             DirectiveHolder currentDirective = null;
             var holders = _placeholders;
-            bool inUrl = false;
             foreach (var match in matches.OrderBy(item => item.match.Index))
             {
                 var text = template.Substring(templateIndex, match.match.Index - templateIndex);
                 holders.Add(new TextHolder(text, position++));
-                inUrl = inUrl
-                    ? !text.Contains(" ")
-                    : (text.Contains("http://") || text.Contains("https://"));
 
                 templateIndex = match.match.Index + match.match.Length;
 
@@ -93,7 +89,7 @@ namespace Zed.CRM.FreeMarker
                     case PlaceholderType.Field:
                         {
                             var value = match.match.Value.Trim('$', '{', '}');
-                            holders.Add(new Placeholder(_metadataContainer, value, position++, inUrl));
+                            holders.Add(new Placeholder(_metadataContainer, value, position++));
                             break;
                         }
                     case PlaceholderType.Directive:

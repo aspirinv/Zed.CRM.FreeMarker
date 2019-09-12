@@ -133,6 +133,35 @@ namespace Zed.CRM.FreeMarker.Tests
         }
 
         [TestMethod]
+        public void HrefFormatValueTemplateParseTest()
+        {
+            var customerId = Guid.NewGuid();
+
+            var service = new Mock<IOrganizationService>();
+            service.Setup(s => s.Execute(It.IsAny<RetrieveAllEntitiesRequest>()))
+                .Returns(new[] { _contactMetadata }.AsResponse());
+            service.Setup(s => s.Execute(It.IsAny<RetrieveEntityRequest>()))
+                .Returns(_contactMetadata.AsResponse());
+
+            var contact = new Entity("contact", customerId)
+            {
+                ["fullname"] = "Brunhilde Semel"
+            };
+            service.Setup(s => s.RetrieveMultiple(It.Is<QueryExpression>(e
+                => e.Criteria.Conditions.Any(c => c.AttributeName == "contactid" && c.Values.Contains(customerId)))))
+                .Returns(new EntityCollection(new List<Entity> { contact }));
+
+            var template = "Follow the link <a href='https://mysite.com?user=${Customer.contact.fullname?href}'>${Customer.contact.fullname}</a>";
+            var parser = new FreeMarkerParser(service.Object, template);
+            var result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Follow the link <a href='https://mysite.com?user=Brunhilde%20Semel'>Brunhilde Semel</a>", result);
+        }
+
+        [TestMethod]
         public void IfTemplateParseTest()
         {
             var customerId = Guid.NewGuid();
