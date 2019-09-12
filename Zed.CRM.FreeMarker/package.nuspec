@@ -3,7 +3,7 @@
 <package >
   <metadata>
     <id>Zed.CRM.FreeMarker</id>
-    <version>1.0.0.5</version>
+    <version>1.0.0.7</version>
     <authors>Spirin Alexander</authors>
     <owners>Spirin Alexander</owners>
     <licenseUrl>https://github.com/aspirinv/Zed.CRM.FreeMarker/blob/master/LICENSE</licenseUrl>
@@ -15,7 +15,7 @@
     <copyright>Copyright 2019</copyright>
     <tags>FreeMarker CRM Textprocessing</tags>
     <dependencies>
-      <dependency id="Microsoft.CrmSdk.CoreAssemblies" version="9.0.2.12" />
+      <dependency id="Microsoft.CrmSdk.CoreAssemblies" version="9.0.2.17" />
     </dependencies>
   </metadata>
   <files>
