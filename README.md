@@ -1,6 +1,7 @@
 # Zed.CRM.FreeMarker
 
 [![License](https://img.shields.io/badge/license-MIT-yellowgreen.svg?style=flat)](https://github.com/aspirinv/Zed.CRM.FreeMarker/blob/master/LICENSE)
+[![NuGet Badge](https://buildstats.info/nuget/Zed.CRM.FreeMarker)](https://www.nuget.org/packages/Zed.CRM.FreeMarker/)
 
 CRM specific [FreeMarker](https://freemarker.apache.org/) template engine. It allows to process FreeMarker templates to produce text result based on data from the MS Dynamics CRM. 
 It can be used in 3rd party projects or as part of the CRM Plugin or CustomActivity.
