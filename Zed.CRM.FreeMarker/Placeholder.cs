@@ -28,19 +28,15 @@ namespace Zed.CRM.FreeMarker
                 mask = (int)ZedActivityPartyParticipationTypeMask.Sender;
             }
 
-            var majorParts = value.Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries);
+            string major;
+            (major, Format, Default) = value.SplitFieldValue();
 
-            var defParts = (majorParts.Length > 1 ? majorParts[1] : majorParts[0])
-                .Split(new[] { '!' }, StringSplitOptions.RemoveEmptyEntries);
-            var major = majorParts.Length > 1 ? majorParts[0] : defParts[0];
-            Format = majorParts.Length > 1 ? defParts[0] : string.Empty;
-            
             var parts = major.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length < 3)
             {
                 throw new Exception($"Invalid template parameter {value}");
             }
-            Default = defParts.Length > 1 ? defParts.Last().Trim('\"') : "";
+
             Position = position;
             Variable = parts[0];
             EntityName = metadataContainer.DefineEntityName(parts[1]);

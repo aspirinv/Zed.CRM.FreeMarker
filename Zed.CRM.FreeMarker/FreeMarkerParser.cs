@@ -89,7 +89,9 @@ namespace Zed.CRM.FreeMarker
                     case PlaceholderType.Field:
                         {
                             var value = match.match.Value.Trim('$', '{', '}');
-                            holders.Add(new Placeholder(_metadataContainer, value, position++));
+                            holders.Add(value.StartsWith(".")
+                                ? (IPlaceholder)new FunctionHolder(_metadataContainer, value, position++)
+                                : new Placeholder(_metadataContainer, value, position++));
                             break;
                         }
                     case PlaceholderType.Directive:
