@@ -43,8 +43,8 @@ namespace Zed.CRM.FreeMarker
 
         public string DefineField(string fieldName, string entityName)
         {
-            fieldName = fieldName.Trim().Replace(Environment.NewLine, "");
-            entityName = entityName.Trim().Replace(Environment.NewLine, "");
+            fieldName = fieldName.CleanUpMetadataName();
+            entityName = entityName.CleanUpMetadataName();
             var property = GetAttributesMetadata(entityName).Attributes.FirstOrDefault(item =>
                 item.LogicalName.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase) ||
                 item.DisplayName.LocalizedLabels.Any(label => label.Label.Equals(fieldName, StringComparison.InvariantCultureIgnoreCase)));
@@ -57,7 +57,7 @@ namespace Zed.CRM.FreeMarker
 
         public string DefineEntityName(string entityName)
         {
-            entityName = entityName.Trim().Replace(Environment.NewLine, "");
+            entityName = entityName.CleanUpMetadataName();
             var entity = _entities.FirstOrDefault(item =>
                 item.LogicalName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase) ||
                 item.DisplayName.LocalizedLabels.Any(label => label.Label.Equals(entityName, StringComparison.InvariantCultureIgnoreCase)));

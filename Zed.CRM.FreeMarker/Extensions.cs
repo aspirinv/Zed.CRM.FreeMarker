@@ -26,5 +26,8 @@ namespace Zed.CRM.FreeMarker
                 majorParts.Length > 1 ? defParts[0] : string.Empty, 
                 defParts.Length > 1 ? defParts.Last().Trim('\"') : string.Empty);
         }
+
+        public static string CleanUpMetadataName(this string name)
+            => name.Trim().Replace(Environment.NewLine, "").Replace("\r", "").Replace("\n", "");
     }
 }
