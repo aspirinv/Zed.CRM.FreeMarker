@@ -24,6 +24,11 @@ namespace Zed.CRM.FreeMarker.Tests
             attribute.DisplayName = name.AsLabel();
         }
 
+        internal static void AddLocalizationText(this AttributeMetadata attribute, string localization)
+        {
+            attribute.DisplayName.LocalizedLabels.Add(new LocalizedLabel(localization, 0));
+        }
+
         internal static EntityMetadata Compile(this AttributeMetadata[] attributes, string name)
         {
             var result = new EntityMetadata { LogicalName = name };

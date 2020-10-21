@@ -20,6 +20,8 @@ namespace Zed.CRM.FreeMarker.Tests
         {
             var fullNameField = new AttributeMetadata();
             fullNameField.SetName("fullname");
+            fullNameField.AddLocalizationText("Full Name");
+
             var genderField = new PicklistAttributeMetadata();
             genderField.SetName("gender");
             genderField.OptionSet = new OptionSetMetadata(new OptionMetadataCollection(new List<OptionMetadata>
@@ -271,6 +273,36 @@ namespace Zed.CRM.FreeMarker.Tests
             });
 
             Assert.AreEqual($"Recieve it at {DateTime.UtcNow.ToLocalTime():t} Return at {DateTime.UtcNow.ToLocalTime():d}", result);
+        }
+
+        [TestMethod]
+        public void NewLineTemplateParseTest()
+        {
+            var customerId = Guid.NewGuid();
+
+            var service = new Mock<IOrganizationService>();
+            service.Setup(s => s.Execute(It.IsAny<RetrieveAllEntitiesRequest>()))
+                .Returns(new[] { _contactMetadata }.AsResponse());
+            service.Setup(s => s.Execute(It.IsAny<RetrieveEntityRequest>()))
+                .Returns(_contactMetadata.AsResponse());
+
+            var contact = new Entity("contact", customerId)
+            {
+                ["fullname"] = "Brunhilde Semel"
+            };
+            service.Setup(s => s.RetrieveMultiple(It.Is<QueryExpression>(e
+                => e.Criteria.Conditions.Any(c => c.AttributeName == "contactid" && c.Values.Contains(customerId)))))
+                .Returns(new EntityCollection(new List<Entity> { contact }));
+
+            var template = @"Dear ${Customer.contact.Full 
+Name}";
+            var parser = new FreeMarkerParser(service.Object, template);
+            var result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Dear Brunhilde Semel", result);
         }
     }
 }
