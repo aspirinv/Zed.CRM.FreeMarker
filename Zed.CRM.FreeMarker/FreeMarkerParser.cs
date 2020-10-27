@@ -58,7 +58,7 @@ namespace Zed.CRM.FreeMarker
                 Regex.Matches(template, @"\$\{([^\}]*)\}").OfType<Match>()
                     .Select(item => new { match = item, type = PlaceholderType.Field })
                     .Union(
-                        Regex.Matches(template, @"<#([[a-zA-Z]*) ([^>]*)>")
+                        Regex.Matches(template, @"<#([[a-zA-Z]*)[\s]([^>]*)>")
                             .OfType<Match>()
                             .Select(item => new { match = item, type = PlaceholderType.Directive }))
                     .Union(

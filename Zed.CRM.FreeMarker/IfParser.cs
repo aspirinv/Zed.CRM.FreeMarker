@@ -20,6 +20,7 @@ namespace Zed.CRM.FreeMarker
 
         public void SetValue(string value)
         {
+            value = value.CleanUpMetadataName().Replace("= =", "==");
             var match = Regex.Match(value, @"(.*) (==|!=) (.*)");
             if (!match.Success)
             {
