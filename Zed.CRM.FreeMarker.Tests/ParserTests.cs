@@ -217,6 +217,59 @@ namespace Zed.CRM.FreeMarker.Tests
         }
 
         [TestMethod]
+        public void IfEncodedTemplateParseTest()
+        {
+            var customerId = Guid.NewGuid();
+
+            var service = new Mock<IOrganizationService>();
+            service.Setup(s => s.Execute(It.IsAny<RetrieveAllEntitiesRequest>()))
+                .Returns(new [] { _contactMetadata }.AsResponse());
+            service.Setup(s => s.Execute(It.IsAny<RetrieveEntityRequest>()))
+                .Returns(_contactMetadata.AsResponse());
+
+            var contact = new Entity("contact", customerId)
+            {
+                ["fullname"] = "Brunhilde Semel",
+                ["gender"] = new OptionSetValue(1)
+            };
+            service.Setup(s => s.RetrieveMultiple(It.Is<QueryExpression>(e
+                 => e.Criteria.Conditions.Any(c => c.AttributeName == "contactid" && c.Values.Contains(customerId)))))
+                .Returns(new EntityCollection(new List<Entity> { contact }));
+
+            var template = "&lt;#if Customer.contact.gender == Female&gt;Mrs<#elseif Customer.contact.gender == Male&gt;Mr&lt;#elseif Customer.contact.gender == Div>Msr&lt;#else&gt;Dear&lt;/#if&gt;>, ${Customer.contact.fullname}";
+            var parser = new FreeMarkerParser(service.Object, template, Configurations.Default);
+            var result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Mrs>, Brunhilde Semel", result);
+            contact["gender"] = new OptionSetValue(0);
+            result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Mr>, Brunhilde Semel", result);
+
+            contact["gender"] = new OptionSetValue(2);
+            result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Msr>, Brunhilde Semel", result);
+
+            contact["gender"] = null;
+            result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Dear>, Brunhilde Semel", result);
+        }
+
+        [TestMethod]
         public void ReplaceValueTest()
         {
             var customerId = Guid.NewGuid();
