@@ -22,6 +22,7 @@ namespace Zed.CRM.FreeMarker
             switch (directive.ToLower())
             {
                 case "if": return new IfParser(_metadataContainer);
+                case "list": return new ListDirective(_metadataContainer);
                 case "elseif":
                     {
                         current.ApplyInDirective("else");
@@ -47,7 +48,9 @@ namespace Zed.CRM.FreeMarker
             {
                 throw new Exception($"Keys in template doesn't fit to the provided entities. Query: {string.Join(",", _queries.Keys)}. Provided: {string.Join(",", references.Keys)}");
             }
-            var entities = _queries.ToDictionary(q => q.Key, q => GetEntity(q.Key, references[q.Key]));
+            var entities = _queries
+                .Where(q => references.ContainsKey(q.Key))
+                .ToDictionary(q => q.Key, q => GetEntity(q.Key, references[q.Key]));
             return string.Concat(_placeholders.OrderBy(item => item.Position)
                 .Select(holder => holder.Content(entities)));
         }

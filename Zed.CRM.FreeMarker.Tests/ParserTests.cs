@@ -389,5 +389,59 @@ Name}";
 
             Assert.AreEqual("Mrs Brunhilde Semel", result);
         }
+
+        [TestMethod]
+        public void ListParseTest()
+        {
+            var customerId = Guid.NewGuid();
+
+            var nameField = new AttributeMetadata();
+            nameField.SetName("name");
+            nameField.AddLocalizationText("Name");
+
+            var subMetadata = new[] { nameField }.Compile("sub");
+
+            var service = new Mock<IOrganizationService>();
+            service.Setup(s => s.Execute(It.IsAny<RetrieveAllEntitiesRequest>()))
+                .Returns(new[] { _contactMetadata, subMetadata }.AsResponse());
+            service.Setup(s => s.Execute(It.Is<RetrieveEntityRequest>(r=>r.LogicalName == _contactMetadata.LogicalName)))
+                .Returns(_contactMetadata.AsResponse());
+            service.Setup(s => s.Execute(It.Is<RetrieveEntityRequest>(r=>r.LogicalName == subMetadata.LogicalName)))
+                .Returns(subMetadata.AsResponse());
+
+            var contact = new Entity("contact", customerId)
+            {
+                ["fullname"] = "Brunhilde Semel",
+                ["gender"] = new OptionSetValue(1)
+            };
+            service.Setup(s => s.RetrieveMultiple(It.Is<QueryExpression>(e
+                => e.Criteria.Conditions.Any(c => c.AttributeName == "contactid" && c.Values.Contains(customerId)))))
+                .Returns(new EntityCollection(new List<Entity> { contact }));
+
+            var template = @"${Customer.contact.Full Name}<#list Customer.items as item><p>${item.sub.name}</p></#list>";
+            var parser = new FreeMarkerParser(service.Object, template);
+            parser.OnEntityRetrieved += (s,e)=> e.Entity["items"] = new[] 
+            { 
+                new Entity("sub")
+                {
+                    ["name"] = "a"
+                },
+                new Entity("sub")
+                {
+                    ["name"] = "b"
+                },
+                new Entity("sub")
+                {
+                    ["name"] = "c"
+                }
+            };
+
+            var result = parser.Produce(new Dictionary<string, EntityReference>
+            {
+                ["Customer"] = new EntityReference("contact", customerId)
+            });
+
+            Assert.AreEqual("Brunhilde Semel<p>a</p><p>b</p><p>c</p>", result);
+        }
     }
 }

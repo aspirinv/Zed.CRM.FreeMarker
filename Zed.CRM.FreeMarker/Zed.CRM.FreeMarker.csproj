@@ -68,6 +68,7 @@
     <Compile Include="IfParser.cs" />
     <Compile Include="Interfaces\IDirectiveParser.cs" />
     <Compile Include="Interfaces\IPlaceholder.cs" />
+    <Compile Include="ListDirective.cs" />
     <Compile Include="MetadataContainer.cs" />
     <Compile Include="Placeholder.cs" />
     <Compile Include="PlaceholderType.cs" />

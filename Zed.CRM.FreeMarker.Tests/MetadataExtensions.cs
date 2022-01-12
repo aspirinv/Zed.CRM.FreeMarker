@@ -31,7 +31,11 @@ namespace Zed.CRM.FreeMarker.Tests
 
         internal static EntityMetadata Compile(this AttributeMetadata[] attributes, string name)
         {
-            var result = new EntityMetadata { LogicalName = name };
+            var result = new EntityMetadata 
+            { 
+                LogicalName = name,
+                DisplayName = new Label(name, 0)
+            };
             var mType = typeof(EntityMetadata);
             mType
                 .GetField("_attributes", BindingFlags.Instance | BindingFlags.NonPublic)
